@@ -33,24 +33,28 @@ nn_scoring <- function(json, model) {
   return(as.list(result.df))
 }
 
+### Arity of CDSW Model function must be 1
+scoring <- function(args) {
+  return(nn_scoring(args))
+}
 
-sample <- '{
-  "msisdn": 632001647830,
-  "pxn_mo": 7,
-  "pxn_yr": 2018,
-  "avg_meanthroughputul": -0.36,
-  "avg_meanthroughputdl": 0.02,
-  "min_totaldataul": 0,
-  "max_totaldataul": -0.58,
-  "sum_totaldataul": -0.61,
-  "avg_totaldataul": -0.05,
-  "min_totaldatadl": 0,
-  "max_totaldatadl": 1.36,
-  "sum_totaldatadl": -0.39,
-  "avg_totaldatadl": 0.37,
-  "avg_internetlatency": -0.2,
-  "avg_httpsuccessratio": 0.37
-}'
-
+# sample <- '{
+#   "msisdn": 632001647830,
+#   "pxn_mo": 7,
+#   "pxn_yr": 2018,
+#   "avg_meanthroughputul": -0.36,
+#   "avg_meanthroughputdl": 0.02,
+#   "min_totaldataul": 0,
+#   "max_totaldataul": -0.58,
+#   "sum_totaldataul": -0.61,
+#   "avg_totaldataul": -0.05,
+#   "min_totaldatadl": 0,
+#   "max_totaldatadl": 1.36,
+#   "sum_totaldatadl": -0.39,
+#   "avg_totaldatadl": 0.37,
+#   "avg_internetlatency": -0.2,
+#   "avg_httpsuccessratio": 0.37
+# }'
+#
 # library(jsonlite)
 # print(nn_scoring(fromJSON(sample)))

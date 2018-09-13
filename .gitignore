@@ -1,3 +1,9 @@
 .cache/
 .oracle_jre_usage/
 .viminfo
+
+*.Rproj
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata

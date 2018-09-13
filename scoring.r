@@ -35,26 +35,24 @@ nn_scoring <- function(json, model) {
 
 ### Arity of CDSW Model function must be 1
 scoring <- function(args) {
-  return(nn_scoring(args))
-}
 
-# sample <- '{
-#   "msisdn": 632001647830,
-#   "pxn_mo": 7,
-#   "pxn_yr": 2018,
-#   "avg_meanthroughputul": -0.36,
-#   "avg_meanthroughputdl": 0.02,
-#   "min_totaldataul": 0,
-#   "max_totaldataul": -0.58,
-#   "sum_totaldataul": -0.61,
-#   "avg_totaldataul": -0.05,
-#   "min_totaldatadl": 0,
-#   "max_totaldatadl": 1.36,
-#   "sum_totaldatadl": -0.39,
-#   "avg_totaldatadl": 0.37,
-#   "avg_internetlatency": -0.2,
-#   "avg_httpsuccessratio": 0.37
-# }'
-#
-# library(jsonlite)
-# print(nn_scoring(fromJSON(sample)))
+  make.result <- function(score, code, message) {
+    res <- list(score, code, message)
+    attr(res, "names") <- c("nn_score", "error_code", "error_message")
+    return(res)
+  }
+
+  if (is.null(args$payload_type)) {
+    return(make.result(-1, -1, "Missing 'payload_type'"))
+  }
+  if (args$payload_type == 'full') {
+    return('full')
+  }
+  else if (args$payload_type == 'simple') {
+    return('simple')
+  }
+  else {
+    return(make.result(-1, -1, "Unknown value specified for 'payload_type'"))
+  }
+#  return(nn_scoring(args))
+}

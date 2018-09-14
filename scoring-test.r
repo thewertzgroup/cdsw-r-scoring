@@ -52,3 +52,64 @@ json.simple <- '{
 }'
 
 simple.valid <- fromJSON(json.simple)
+
+
+
+### scratch
+
+
+
+json.full.swapped <- '{
+  "payload_type": "full",
+  "msisdn": 632001647830,
+  "pxn_mo": 7,
+  "pxn_yr": 2018,
+  "avg_meanthroughputdl": 0.02,
+  "avg_meanthroughputul": -0.36,
+  "min_totaldataul": 0,
+  "max_totaldataul": -0.58,
+  "sum_totaldataul": -0.61,
+  "avg_totaldataul": -0.05,
+  "min_totaldatadl": 0,
+  "max_totaldatadl": 1.36,
+  "sum_totaldatadl": -0.39,
+  "avg_totaldatadl": 0.37,
+  "avg_internetlatency": -0.2,
+  "avg_httpsuccessratio": 0.37
+}'
+
+full.swapped <- fromJSON(json.full.swapped)
+
+json.full.missing <- '{
+  "payload_type": "full",
+  "msisdn": 632001647830,
+  "pxn_mo": 7,
+  "pxn_yr": 2018,
+  "avg_meanthroughputul": -0.36,
+  "min_totaldataul": 0,
+  "max_totaldataul": -0.58,
+  "sum_totaldataul": -0.61,
+  "avg_totaldataul": -0.05,
+  "min_totaldatadl": 0,
+  "max_totaldatadl": 1.36,
+  "sum_totaldatadl": -0.39,
+  "avg_totaldatadl": 0.37,
+  "avg_internetlatency": -0.2,
+  "avg_httpsuccessratio": 0.37
+}'
+
+full.missing <- fromJSON(json.full.missing)
+
+json.simple.missing <- '{
+  "payload_type": "simple",
+  "body": [-0.36, 0.02, 0, -0.58, -0.61, -0.05, 0, 1.36, -0.39, 0.37, -0.2]
+}'
+
+simple.missing <- fromJSON(json.simple.missing)
+
+json.simple.toomany <- '{
+  "payload_type": "simple",
+  "body": [-0.36, 0.02, 0, -0.58, -0.61, -0.05, 0, 1.36, -0.39, 0.37, -0.2, 0.37, 0.37]
+}'
+
+simple.toomany <- fromJSON(json.simple.toomany)

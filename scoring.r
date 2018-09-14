@@ -6,32 +6,20 @@ options(scipen = 999)
 
 nn_model <- readRDS("lte_nn_model.rds")
 
-### Declare the numeric variable(s)
-num_input <- c("avg_meanthroughputul",
-               "avg_meanthroughputdl",
-               "min_totaldataul",
-               "max_totaldataul",
-               "sum_totaldataul",
-               "avg_totaldataul",
-               "min_totaldatadl",
-               "max_totaldatadl",
-               "sum_totaldatadl",
-               "avg_totaldatadl",
-               "avg_internetlatency",
-               "avg_httpsuccessratio")
-
-nn_scoring <- function(json, model) {
-  if (missing(model)) { model <- nn_model }
-  set.seed(9999)
-
-  tmp.df <- data.frame(json)
-  input.df <- tmp.df[, names(json) %in% num_input]
-  output.df <- tmp.df[, !names(json) %in% num_input]
-  pred.weights <- neuralnet::compute(model, input.df)$net.result
-  result.df <- cbind(output.df,
-                      data.frame('nn_score'=c(pred.weights[,2])))
-  return(as.list(result.df))
-}
+### Declare the numeric label(s)
+num_label <-
+  c("avg_meanthroughputul",
+    "avg_meanthroughputdl",
+    "min_totaldataul",
+    "max_totaldataul",
+    "sum_totaldataul",
+    "avg_totaldataul",
+    "min_totaldatadl",
+    "max_totaldatadl",
+    "sum_totaldatadl",
+    "avg_totaldatadl",
+    "avg_internetlatency",
+    "avg_httpsuccessratio")
 
 ### Arity of CDSW Model function must be 1
 scoring <- function(args) {
@@ -43,16 +31,47 @@ scoring <- function(args) {
   }
 
   if (is.null(args$payload_type)) {
-    return(make.result(-1, -1, "Missing 'payload_type'"))
+    return(make.result(-1, -100, "Missing 'payload_type'"))
   }
   if (args$payload_type == 'full') {
-    return('full')
+    exists <- names(args)[names(args) %in% num_label]
+    if (length(exists) != length(num_label)) {
+      missing <- num_label[!num_label %in% exists]
+      return(make.result(-1, -1, paste("Missing key in input `", missing, "'", sep="")))
+    }
+    input.vector <- list(
+      args[num_label[1]][[1]], args[num_label[2]][[1]], args[num_label[3]][[1]],
+      args[num_label[4]][[1]], args[num_label[5]][[1]], args[num_label[6]][[1]],
+      args[num_label[7]][[1]], args[num_label[8]][[1]], args[num_label[9]][[1]],
+      args[num_label[10]][[1]],args[num_label[11]][[1]],args[num_label[12]][[1]])
+    attr(input.vector, "names") <- num_label
+    input.df <- data.frame(input.vector)
+    pred.weights <- neuralnet::compute(nn_model, input.df)$net.result
+    return(make.result(pred.weights[,2], 0, "Success"))
   }
   else if (args$payload_type == 'simple') {
-    return('simple')
+    if (is.null(args$body)) {
+      return(make.result(-1, -101, "Missing 'body' in simple payload_type"))
+    }
+    else if (length(args$body) < length(num_label)) {
+      return(make.result(-1, -201,
+                         paste("Not enough values specified in 'body' (",
+                               length(args$body), ")", sep="")))
+    }
+    else if (length(args$body) > length(num_label)) {
+      return(make.result(-1, -202,
+                         paste("Too many values specified in 'body (",
+                               length(args$body), ")", sep="")))
+    }
+    else {
+      input.vector <- as.list(args$body)
+      attr(input.vector, "names") <- num_label
+      input.df <- data.frame(input.vector)
+      pred.weights <- neuralnet::compute(nn_model, input.df)$net.result
+      return(make.result(pred.weights[,2], 0, "Success"))
+    }
   }
   else {
-    return(make.result(-1, -1, "Unknown value specified for 'payload_type'"))
+    return(make.result(-1, -200, "Unknown value specified for 'payload_type'"))
   }
-#  return(nn_scoring(args))
 }
